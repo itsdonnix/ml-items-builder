@@ -1,0 +1,10 @@
+[
+  { "id": "assault", "name": "Assault", "icon": "fa-hand-fist", "color": "#C0392B", "mainStats": ["physAtk", "hp", "atkSpd"] },
+  { "id": "assassination", "name": "Assassination", "icon": "fa-skull-crossbones", "color": "#8E1B3D", "mainStats": ["physAtk", "physPen", "cdr"] },
+  { "id": "agility", "name": "Agility", "icon": "fa-bolt-lightning", "color": "#27AE60", "mainStats": ["physAtk", "atkSpd", "critChance"] },
+  { "id": "arcane", "name": "Arcane", "icon": "fa-hat-wizard", "color": "#8E44AD", "mainStats": ["magPow", "magPen", "cdr"] },
+  { "id": "firmness", "name": "Firmness", "icon": "fa-shield", "color": "#2980B9", "mainStats": ["hp", "physDef", "magDef"] },
+  { "id": "courage", "name": "Courage", "icon": "fa-heart-pulse", "color": "#16A085", "mainStats": ["hp", "hpRegen", "physDef"] },
+  { "id": "liberate", "name": "Liberate", "icon": "fa-dove", "color": "#D63384", "mainStats": ["hp", "magDef", "mana"] },
+  { "id": "bounty_hunter", "name": "Bounty Hunter", "icon": "fa-crosshairs", "color": "#E67E22", "mainStats": ["physAtk", "physPen", "moveSpd"] }
+]

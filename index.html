@@ -1,607 +1,288 @@
-<!DOCTYPE html>
-<html lang="en" data-theme="dark">
-<head>
-<meta name="description" content="Mobile Legends Items Builder">
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mobile Legends Items Builder</title>
-<script src="https://cdn.tailwindcss.com"></script>
-<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-<script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-<style>
-:root{
-  --bg:#0b0b12;--bg2:#111119;--card:#181824;--card-h:#1f1f30;--border:#2a2a40;
-  --text:#e8e8f0;--text2:#b0b0c8;--muted:#686880;
-  --accent:#d4a634;--accent-h:#e8b840;--accent-dim:rgba(212,166,52,.12);
-  --hero:#06d6a0;--hero-dim:rgba(6,214,160,.1);
-  --build:#fbbf24;--build-dim:rgba(251,191,36,.1);
-  --best:#22c55e;--best-dim:rgba(34,197,94,.08);
-  --emblem:#c084fc;--emblem-dim:rgba(192,132,252,.1);
-  --danger:#ef4444;
-  --cat-boots:#92702C;--cat-attack:#C0392B;--cat-magic:#8E44AD;--cat-defense:#2980B9;--cat-jungle:#27AE60;
-  --shadow:0 4px 24px rgba(0,0,0,.4);
-  --font-d:'Rajdhani',sans-serif;--font-u:'Space Grotesk',sans-serif;
-}
-[data-theme="light"]{
-  --bg:#f0f0f5;--bg2:#e6e6ee;--card:#fff;--card-h:#f5f5fa;--border:#d0d0dc;
-  --text:#1a1a2e;--text2:#44445a;--muted:#8888a0;
-  --accent:#b8860b;--accent-h:#d4a634;--accent-dim:rgba(184,134,11,.08);
-  --hero:#059669;--hero-dim:rgba(5,150,105,.06);
-  --build:#d97706;--build-dim:rgba(217,119,6,.06);
-  --best:#16a34a;--best-dim:rgba(22,163,74,.06);
-  --emblem:#9333ea;--emblem-dim:rgba(147,51,234,.06);
-  --danger:#dc2626;--shadow:0 4px 24px rgba(0,0,0,.06);
-}
-*{margin:0;padding:0;box-sizing:border-box}
-body{font-family:var(--font-u);background:var(--bg);color:var(--text);height:100vh;overflow:hidden;transition:background .4s,color .4s}
-[v-cloak]{display:none!important}
-::-webkit-scrollbar{width:5px;height:5px}
-::-webkit-scrollbar-track{background:transparent}
-::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
-::-webkit-scrollbar-thumb:hover{background:var(--muted)}
-.bg-blob{position:fixed;border-radius:50%;filter:blur(120px);opacity:.04;pointer-events:none;z-index:0}
-@keyframes blobFloat{0%,100%{transform:translate(0,0) scale(1)}33%{transform:translate(30px,-25px) scale(1.1)}66%{transform:translate(-20px,20px) scale(.95)}}
-.bg-blob{animation:blobFloat 25s ease-in-out infinite}
-.app-header{height:56px;background:var(--card);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 20px;position:relative;z-index:20;transition:background .4s,border .4s}
-.app-logo{font-family:var(--font-d);font-weight:700;font-size:1.35rem;letter-spacing:.5px;color:var(--accent);display:flex;align-items:center;gap:10px}
-.header-actions{display:flex;align-items:center;gap:10px}
-.btn{font-family:var(--font-u);font-size:.8rem;font-weight:600;padding:7px 16px;border-radius:7px;border:1px solid var(--border);background:var(--card);color:var(--text);cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:6px;white-space:nowrap}
-.btn:hover{border-color:var(--accent);background:var(--accent-dim)}
-.btn-accent{background:var(--accent);color:#000;border-color:var(--accent)}
-.btn-accent:hover{background:var(--accent-h);border-color:var(--accent-h)}
-.btn-icon{width:36px;height:36px;padding:0;justify-content:center;border-radius:8px}
-.btn-danger{border-color:var(--danger);color:var(--danger)}
-.btn-danger:hover{background:rgba(239,68,68,.1)}
-.btn-dup{border-color:var(--hero);color:var(--hero)}
-.btn-dup:hover{background:var(--hero-dim)}
-.btn-emblem{border-color:var(--emblem);color:var(--emblem)}
-.btn-emblem:hover{background:var(--emblem-dim)}
-.btn-sm{padding:4px 10px;font-size:.7rem;border-radius:5px}
-.btn-sm.btn-icon{width:26px;height:26px;font-size:.65rem}
-.deck-wrap{height:calc(100vh - 56px);overflow-x:auto;overflow-y:hidden;display:flex;padding:16px;gap:14px;position:relative;z-index:10}
-.deck-column{min-width:340px;max-width:340px;background:var(--card);border:1px solid var(--border);border-radius:14px;display:flex;flex-direction:column;flex-shrink:0;transition:background .4s,border .4s,opacity .2s,transform .2s;animation:deckIn .35s ease-out;position:relative}
-.deck-column.dragging{opacity:.35;transform:scale(.97)}
-@keyframes deckIn{from{opacity:0;transform:translateX(30px) scale(.97)}to{opacity:1;transform:none}}
-.drop-indicator{position:absolute;top:0;bottom:0;width:4px;background:var(--accent);border-radius:2px;z-index:50;pointer-events:none;animation:dropPulse 1s ease-in-out infinite}
-.drop-indicator.left{left:-9px}
-.drop-indicator.right{right:-9px}
-@keyframes dropPulse{0%,100%{opacity:1;transform:scaleY(1)}50%{opacity:.5;transform:scaleY(.92)}}
-.deck-header{padding:12px 14px 8px;display:flex;align-items:center;gap:5px;border-bottom:1px solid var(--border)}
-.drag-handle{cursor:grab;color:var(--muted);font-size:.85rem;padding:4px 2px;border-radius:4px;transition:color .2s,background .2s;display:flex;align-items:center;user-select:none;flex-shrink:0}
-.drag-handle:hover{color:var(--accent);background:var(--accent-dim)}
-.drag-handle:active{cursor:grabbing}
-.deck-name-input{background:transparent;border:1px solid transparent;color:var(--text);font-family:var(--font-d);font-weight:700;font-size:1.05rem;padding:2px 6px;border-radius:5px;flex:1;outline:none;transition:all .2s;min-width:0}
-.deck-name-input:focus{border-color:var(--accent);background:var(--bg2)}
-.move-btn{width:24px;height:24px;padding:0;display:flex;align-items:center;justify-content:center;border-radius:5px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;transition:all .2s;font-size:.6rem;flex-shrink:0}
-.move-btn:hover:not(:disabled){border-color:var(--accent);color:var(--accent);background:var(--accent-dim)}
-.move-btn:disabled{opacity:.2;cursor:default}
-.move-btns{display:flex;gap:3px;align-items:center;flex-shrink:0}
-.deck-section{padding:8px 14px;border-bottom:1px solid var(--border)}
-.sel{width:100%;background:var(--bg2);border:1px solid var(--border);color:var(--text);font-family:var(--font-u);font-size:.78rem;padding:6px 10px;border-radius:7px;cursor:pointer;outline:none;transition:all .2s;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23686880' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center}
-.sel:focus{border-color:var(--accent)}
-.sel optgroup{font-weight:600;font-style:normal}
-.sel option{background:var(--card);color:var(--text)}
-.emblem-row{display:flex;align-items:center;gap:6px}
-.emblem-row>i{color:var(--emblem);font-size:.72rem;flex-shrink:0}
-.emblem-row .sel{flex:1}
-.emblem-info{margin-top:6px;display:flex;align-items:center;gap:5px;flex-wrap:wrap}
-.emblem-set-tag{font-size:.6rem;font-weight:700;padding:2px 7px;border-radius:4px;color:#fff;line-height:1.3}
-.emblem-tier-tag{font-size:.58rem;font-weight:700;padding:2px 7px;border-radius:4px;line-height:1.3}
-.emblem-stats-text{font-size:.6rem;color:var(--muted);line-height:1.3}
-.emblem-gear{width:28px;height:28px;padding:0;display:flex;align-items:center;justify-content:center;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;transition:all .2s;font-size:.65rem;flex-shrink:0}
-.emblem-gear:hover{border-color:var(--emblem);color:var(--emblem);background:var(--emblem-dim)}
-.deck-items{padding:10px 14px;display:grid;grid-template-columns:1fr 1fr;gap:8px;border-bottom:1px solid var(--border)}
-.item-slot{border:2px dashed var(--border);border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;position:relative;min-height:72px;gap:4px}
-.item-slot:hover{border-color:var(--accent);background:var(--accent-dim)}
-.item-slot i{color:var(--muted);font-size:.85rem;transition:color .2s}
-.item-slot:hover i{color:var(--accent)}
-.item-slot.filled{border-style:solid;border-color:var(--border);flex-direction:row;padding:6px 8px;gap:7px;align-items:center;overflow:hidden}
-.item-slot.filled:hover{border-color:var(--accent);background:var(--accent-dim)}
-.item-cat-bar{width:4px;min-height:38px;border-radius:2px;flex-shrink:0}
-.item-slot-info{flex:1;overflow:hidden;display:flex;flex-direction:column;gap:1px}
-.item-slot-name{font-size:.68rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.item-slot-stats{font-size:.6rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.item-remove{position:absolute;top:-5px;right:-5px;width:18px;height:18px;border-radius:50%;background:var(--danger);color:#fff;border:none;cursor:pointer;display:none;align-items:center;justify-content:center;font-size:.55rem;z-index:5}
-.item-slot.filled:hover .item-remove{display:flex}
-.deck-stats{flex:1;overflow-y:auto;padding:8px 6px}
-.stat-group-label{font-family:var(--font-d);font-size:.65rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;padding:6px 10px 3px;user-select:none}
-.stat-row{display:flex;align-items:center;padding:3px 10px;border-radius:4px;font-size:.72rem;transition:background .15s;gap:4px;border-left:2px solid transparent}
-.stat-row.best{background:var(--best-dim);border-left-color:var(--best)}
-.stat-label{color:var(--muted);white-space:nowrap;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis}
-.stat-vals{display:flex;align-items:center;gap:3px;font-variant-numeric:tabular-nums;flex-shrink:0;font-weight:500}
-.stat-hero{color:var(--hero)}.stat-build{color:var(--build)}.stat-emblem{color:var(--emblem)}
-.stat-sep{color:var(--muted);font-weight:300;font-size:.65rem}
-.stat-total{color:var(--text);font-weight:600}
-.stat-zero{color:var(--muted);opacity:.5}
-.best-badge{color:var(--best);font-size:.6rem;margin-left:2px}
-.stat-legend{padding:8px 14px;display:flex;gap:12px;font-size:.62rem;color:var(--muted);border-bottom:1px solid var(--border);flex-wrap:wrap}
-.legend-item{display:flex;align-items:center;gap:4px}
-.legend-dot{width:8px;height:8px;border-radius:2px}
-.empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:16px;color:var(--muted);padding:40px}
-.empty-state i{font-size:3rem;opacity:.3}
-.empty-state p{font-size:.9rem}
-.overlay{position:fixed;inset:0;z-index:100;display:none}
-.overlay.active{display:flex}
-.overlay-backdrop{position:absolute;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);animation:fadeIn .2s}
-@keyframes fadeIn{from{opacity:0}to{opacity:1}}
-@keyframes modalIn{from{opacity:0;transform:scale(.95) translateY(10px)}to{opacity:1;transform:none}}
-.modal{position:relative;margin:auto;background:var(--card);border:1px solid var(--border);border-radius:16px;max-width:95vw;max-height:85vh;display:flex;flex-direction:column;box-shadow:var(--shadow);animation:modalIn .25s ease-out;z-index:1}
-.modal-header{padding:14px 18px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border)}
-.modal-header h3{font-family:var(--font-d);font-weight:700;font-size:1.15rem;display:flex;align-items:center;gap:8px}
-.picker-current{padding:10px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;font-size:.8rem}
-.picker-current-item{flex:1;display:flex;align-items:center;gap:8px}
-.picker-current-bar{width:4px;height:28px;border-radius:2px}
-.picker-search{padding:12px 18px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border)}
-.picker-search i{color:var(--muted);font-size:.85rem}
-.picker-search input{flex:1;background:var(--bg2);border:1px solid var(--border);color:var(--text);font-family:var(--font-u);font-size:.82rem;padding:8px 12px;border-radius:8px;outline:none;transition:border .2s}
-.picker-search input:focus{border-color:var(--accent)}
-.picker-search input::placeholder{color:var(--muted)}
-.picker-cats{padding:10px 18px;display:flex;gap:6px;flex-wrap:wrap;border-bottom:1px solid var(--border)}
-.cat-pill{font-family:var(--font-u);font-size:.72rem;font-weight:600;padding:5px 12px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--text2);cursor:pointer;transition:all .2s}
-.cat-pill:hover{border-color:var(--accent);color:var(--text)}
-.cat-pill.active{background:var(--accent);color:#000;border-color:var(--accent)}
-.picker-grid{padding:14px 18px;overflow-y:auto;display:grid;grid-template-columns:1fr 1fr;gap:8px;flex:1}
-.picker-item{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:10px 12px;cursor:pointer;transition:all .2s;display:flex;gap:10px;align-items:flex-start}
-.picker-item:hover{border-color:var(--accent);transform:translateY(-1px);box-shadow:var(--shadow)}
-.picker-item.disabled{opacity:.35;pointer-events:none}
-.picker-item.current{border-color:var(--accent);background:var(--accent-dim)}
-.picker-item-icon{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:#fff;font-size:.85rem}
-.picker-item-info{flex:1;overflow:hidden}
-.picker-item-name{font-size:.78rem;font-weight:600;margin-bottom:2px}
-.picker-item-stats{font-size:.65rem;color:var(--muted);line-height:1.4}
-.picker-item-passive{font-size:.6rem;color:var(--text2);margin-top:3px;line-height:1.3;display:none;font-style:italic}
-.picker-item:hover .picker-item-passive{display:block}
-.emblem-modal{width:740px}
-.emblem-body{display:flex;flex:1;overflow:hidden}
-.emblem-list-panel{width:255px;border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0}
-.emblem-list-header{padding:12px 14px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border)}
-.emblem-list-header span{font-family:var(--font-d);font-size:.8rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px}
-.emblem-list-scroll{flex:1;overflow-y:auto}
-.emblem-tpl{padding:10px 14px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .15s}
-.emblem-tpl:hover{background:var(--bg2)}
-.emblem-tpl.active{background:var(--accent-dim);border-left:3px solid var(--accent)}
-.emblem-tpl-top{display:flex;align-items:center;gap:7px}
-.emblem-tpl-icon{width:26px;height:26px;border-radius:6px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:.65rem;flex-shrink:0}
-.emblem-tpl-name{font-size:.8rem;font-weight:600;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.emblem-tpl-tier{font-size:.58rem;font-weight:700;padding:1px 6px;border-radius:3px;color:#fff;line-height:1.4}
-.emblem-tpl-main{font-size:.65rem;color:var(--muted);margin-top:3px;padding-left:33px}
-.emblem-tpl-actions{display:flex;gap:4px;margin-top:6px;padding-left:33px}
-.emblem-list-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:30px 20px;gap:10px;color:var(--muted);text-align:center}
-.emblem-list-empty i{font-size:1.5rem;opacity:.3}
-.emblem-list-empty p{font-size:.75rem;line-height:1.4}
-.emblem-form-panel{flex:1;overflow-y:auto;padding:18px 20px}
-.emblem-form-title{font-family:var(--font-d);font-size:1rem;font-weight:700;margin-bottom:16px}
-.form-group{margin-bottom:14px}
-.form-label{font-size:.72rem;font-weight:600;color:var(--muted);margin-bottom:5px;display:block;text-transform:uppercase;letter-spacing:.5px}
-.form-input{width:100%;background:var(--bg2);border:1px solid var(--border);color:var(--text);font-family:var(--font-u);font-size:.82rem;padding:8px 12px;border-radius:8px;outline:none;transition:border .2s}
-.form-input:focus{border-color:var(--accent)}
-.form-input::placeholder{color:var(--muted)}
-.form-sel{width:100%;background:var(--bg2);border:1px solid var(--border);color:var(--text);font-family:var(--font-u);font-size:.82rem;padding:8px 12px;border-radius:8px;cursor:pointer;outline:none;transition:border .2s;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23686880' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center}
-.form-sel:focus{border-color:var(--accent)}
-.form-sel option{background:var(--card);color:var(--text)}
-.tier-pills{display:flex;gap:6px;flex-wrap:wrap}
-.tier-pill-btn{font-size:.72rem;font-weight:600;padding:6px 14px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--text2);cursor:pointer;transition:all .2s}
-.tier-pill-btn:hover{border-color:var(--text2)}
-.tier-pill-btn.active{color:#fff;border-color:transparent}
-.minor-slots{display:flex;flex-direction:column;gap:8px}
-.minor-slot-label{font-size:.65rem;color:var(--muted);font-weight:500}
-.emblem-preview{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin-top:16px}
-.emblem-preview-title{font-family:var(--font-d);font-size:.7rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}
-.emblem-preview-stat{font-size:.75rem;padding:2px 0;display:flex;justify-content:space-between;gap:8px}
-.emblem-preview-stat.main-stat{color:var(--accent);font-weight:600}
-.emblem-preview-stat.minor-stat{color:var(--text2)}
-.emblem-preview-stat .val{font-variant-numeric:tabular-nums;font-weight:600}
-.form-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:18px;padding-top:14px;border-top:1px solid var(--border)}
-.toast-wrap{position:fixed;top:70px;right:20px;z-index:200;display:flex;flex-direction:column;gap:8px}
-.toast{background:var(--card);border:1px solid var(--border);color:var(--text);padding:10px 16px;border-radius:8px;font-size:.8rem;box-shadow:var(--shadow)}
-.toast-success{border-left:3px solid var(--best)}
-.toast-warn{border-left:3px solid var(--accent)}
-.toast-error{border-left:3px solid var(--danger)}
-.toast-enter-active,.toast-leave-active{transition:transform .3s ease,opacity .3s ease}
-.toast-enter-from,.toast-leave-to{transform:translateX(120%);opacity:0}
-@media(max-width:768px){
-  .deck-column{min-width:300px;max-width:300px}
-  .modal{width:98vw}.picker-grid{grid-template-columns:1fr}
-  .emblem-body{flex-direction:column}
-  .emblem-list-panel{width:100%;max-height:180px;border-right:none;border-bottom:1px solid var(--border)}
-}
-@media(prefers-reduced-motion:reduce){*{animation-duration:0s!important;transition-duration:0s!important}}
-</style>
-</head>
-<body>
-<div id="app" v-cloak>
-  <div class="bg-blob" style="width:500px;height:500px;left:-150px;top:15%;background:var(--accent)"></div>
-  <div class="bg-blob" style="width:350px;height:350px;right:-80px;top:55%;background:var(--hero);animation-delay:-8s"></div>
-  <div class="bg-blob" style="width:300px;height:300px;left:40%;bottom:-100px;background:var(--build);animation-delay:-15s"></div>
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" href="https://itsdonnix.github.io/ml-items-builder/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Plan the best Mobile Legends: Bang Bang item builds for every hero. Create, share, and optimize MLBB builds with top item combinations, emblems, and strategies to rank up faster."
+    />
+    <link rel="canonical" href="https://itsdonnix.github.io/ml-items-builder/" />
+    <meta property="og:title" content="Mobile Legends Items Builder" />
+    <meta
+      property="og:description"
+      content="Create, share, and optimize MLBB item builds for every hero."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://itsdonnix.github.it/ml-items-builder/" />
+    <title>Mobile Legends Items Builder</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    />
+    <style>
+      #app {
+        opacity: 0;
+      }
+      #app.ready {
+        opacity: 1;
+        transition: opacity 0.5s ease;
+      }
 
-  <header class="app-header">
-    <div class="app-logo"><i class="fa-solid fa-shield-halved"></i> ML Items Builder</div>
-    <div class="header-actions">
-      <button class="btn btn-icon" @click="toggleTheme" title="Toggle theme"><i class="fa-solid fa-circle-half-stroke"></i></button>
-      <button class="btn btn-emblem" @click="emblemManagerVisible = true"><i class="fa-solid fa-gem"></i> Emblems</button>
-      <button class="btn btn-accent" @click="newBuild"><i class="fa-solid fa-plus"></i> New Build</button>
+      body {
+        margin: 0;
+        font-family: 'Space Grotesk', sans-serif;
+        height: 100vh;
+        overflow: hidden;
+        background-color: var(--bg, #f0f0f5);
+      }
+      .app-header {
+        height: 56px;
+      }
+      .deck-wrap {
+        height: calc(100vh - 56px);
+        overflow: hidden;
+      }
+
+      /* Fancy Loader Styles */
+      .loader-wrapper {
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background: #f0f0f5;
+        transition:
+          opacity 0.6s ease-in-out,
+          visibility 0.6s;
+      }
+
+      .loader-wrapper.hidden {
+        opacity: 0;
+        visibility: hidden;
+      }
+
+      .loader-visual {
+        position: relative;
+        width: 120px;
+        height: 120px;
+        margin-bottom: 24px;
+      }
+
+      .loader-sword {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 3rem;
+        color: #1a1a2e;
+        z-index: 2;
+        animation: floatIcon 2s ease-in-out infinite;
+        text-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      }
+
+      .loader-circle {
+        position: absolute;
+        inset: 0;
+        border-radius: 50%;
+        border: 4px solid transparent;
+        border-top-color: #b8860b; /* Accent */
+        animation: spin 1.5s linear infinite;
+      }
+
+      .loader-circle::before {
+        content: '';
+        position: absolute;
+        inset: 8px;
+        border-radius: 50%;
+        border: 4px solid transparent;
+        border-top-color: #059669; /* Hero */
+        animation: spin 2s linear infinite reverse;
+      }
+
+      .loader-circle::after {
+        content: '';
+        position: absolute;
+        inset: 20px;
+        border-radius: 50%;
+        border: 4px solid transparent;
+        border-top-color: #9333ea; /* Emblem */
+        animation: spin 3s linear infinite;
+      }
+
+      .loader-text {
+        font-family: 'Rajdhani', sans-serif;
+        font-size: 1.5rem;
+        font-weight: 700;
+        letter-spacing: 2px;
+        color: #1a1a2e;
+        text-transform: uppercase;
+        animation: pulseText 2s ease-in-out infinite;
+      }
+
+      .loader-sub {
+        margin-top: 8px;
+        font-size: 0.9rem;
+        color: #8888a0;
+        font-weight: 500;
+      }
+
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      @keyframes floatIcon {
+        0%,
+        100% {
+          transform: translate(-50%, -50%) translateY(0);
+        }
+        50% {
+          transform: translate(-50%, -50%) translateY(-8px);
+        }
+      }
+
+      @keyframes pulseText {
+        0%,
+        100% {
+          opacity: 0.8;
+        }
+        50% {
+          opacity: 1;
+        }
+      }
+
+      .noscript-msg {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        margin: 0;
+        font-family: 'Space Grotesk', sans-serif;
+        background: #f0f0f5;
+        color: #1a1a2e;
+        text-align: center;
+        padding: 2rem;
+        box-sizing: border-box;
+      }
+      .noscript-msg h1 {
+        font-size: 1.5rem;
+        margin: 0 0 0.5rem;
+      }
+      .noscript-msg p {
+        font-size: 1rem;
+        margin: 0;
+        color: #44445a;
+      }
+
+      :root {
+        --bg: #f0f0f5;
+        --bg2: #e6e6ee;
+        --card: #fff;
+        --card-h: #f5f5fa;
+        --border: #d0d0dc;
+        --text: #1a1a2e;
+        --text2: #44445a;
+        --muted: #8888a0;
+        --accent: #b8860b;
+        --accent-h: #d4a634;
+        --accent-dim: rgba(184, 134, 11, 0.08);
+        --hero: #059669;
+        --hero-dim: rgba(5, 150, 105, 0.06);
+        --build: #d97706;
+        --build-dim: rgba(217, 119, 6, 0.06);
+        --best: #16a34a;
+        --best-dim: rgba(22, 163, 74, 0.06);
+        --emblem: #9333ea;
+        --emblem-dim: rgba(147, 51, 234, 0.06);
+        --danger: #dc2626;
+        --shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+        --cat-boots: #92702c;
+        --cat-attack: #c0392b;
+        --cat-magic: #8e44ad;
+        --cat-defense: #2980b9;
+        --cat-jungle: #27ae60;
+        --font-d: 'Rajdhani', sans-serif;
+        --font-u: 'Space Grotesk', sans-serif;
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        * {
+          animation-duration: 0s !important;
+          transition-duration: 0s !important;
+        }
+      }
+    </style>
+    <script>
+      // Prevent dark-theme flash before Vue hydrates
+      ;(function () {
+        try {
+          if (localStorage.getItem('mlb-theme') === 'dark') {
+            document.documentElement.setAttribute('data-theme', 'dark')
+            var link = document.createElement('link')
+            link.rel = 'stylesheet'
+            link.href = '/dark-theme.css'
+            document.head.appendChild(link)
+          }
+        } catch (e) {
+          console.error(e)
+        }
+      })()
+
+      // Debounce loader: only show if page takes >= 200ms
+      ;(function () {
+        var timer = null
+        window.__showLoader = function () {
+          clearTimeout(timer)
+          timer = setTimeout(function () {
+            var el = document.getElementById('loader')
+            if (el) el.style.visibility = 'visible'
+          }, 200)
+        }
+        window.__hideLoader = function () {
+          clearTimeout(timer)
+          var el = document.getElementById('loader')
+          if (el) el.style.visibility = 'hidden'
+        }
+      })()
+    </script>
+    <script type="module" crossorigin src="https://itsdonnix.github.io/ml-items-builder/assets/index-BFIfdaNf.js"></script>
+    <link rel="stylesheet" crossorigin href="https://itsdonnix.github.io/ml-items-builder/assets/index-BCSbaGpq.css">
+  </head>
+  <body>
+    <!-- Fancy Loader (hidden by default, shown after 200ms debounce) -->
+    <div id="loader" class="loader-wrapper" style="visibility: hidden">
+      <div class="loader-visual">
+        <div class="loader-sword"><i class="fa-solid fa-shield-halved"></i></div>
+        <div class="loader-circle"></div>
+      </div>
+      <div class="loader-text">MLBB Builder</div>
+      <div class="loader-sub">Preparing Battle Gear...</div>
     </div>
-  </header>
 
-  <main class="deck-wrap" ref="deckWrap">
-    <div v-if="!builds.length" class="empty-state">
-      <i class="fa-solid fa-layer-group"></i>
-      <p>No builds yet. Click "New Build" to get started.</p>
-    </div>
-    <deck-column
-      v-for="(build, idx) in builds" :key="build.id"
-      :build="build" :index="idx" :best-map="bestMap"
-      :is-first="idx === 0" :is-last="idx === builds.length - 1"
-      :templates="emblemTemplates" :drag-state="dragState"
-      @rename="onRename" @delete="onDeleteBuild" @duplicate="onDuplicate"
-      @move="onMove" @set-hero="onSetHero" @set-emblem="onSetEmblem"
-      @remove-item="onRemoveItem" @open-picker="onOpenPicker"
-      @open-emblem="emblemManagerVisible = true"
-      @drag-start="onDragStart" @drag-over="onDragOver"
-      @drag-leave="onDragLeave" @drop="onDrop" @drag-end="onDragEnd"
-    ></deck-column>
-  </main>
-
-  <item-picker
-    :visible="picker.visible" :build-item-ids="picker.buildItemIds"
-    :current-item-id="picker.currentItemId"
-    @close="closePicker" @pick="onPickItem" @remove="onRemoveItemFromPicker"
-  ></item-picker>
-
-  <emblem-manager
-    :visible="emblemManagerVisible" :templates="emblemTemplates"
-    @close="emblemManagerVisible = false" @save="onSaveTemplate" @delete="onDeleteTemplate"
-  ></emblem-manager>
-
-  <transition-group name="toast" tag="div" class="toast-wrap">
-    <div v-for="t in toasts" :key="t.id" class="toast" :class="'toast-' + t.type">{{ t.msg }}</div>
-  </transition-group>
-</div>
-
-<script>
-var STAT_KEYS=['physAtk','magPow','hp','mana','physDef','magDef','atkSpd','moveSpd','cdr','critChance','hpRegen','manaRegen','lifesteal','spellVamp','physPen','magPen'];
-var STAT_NAMES={physAtk:'Physical Attack',magPow:'Magic Power',hp:'HP',mana:'Mana',physDef:'Physical Defense',magDef:'Magic Defense',atkSpd:'Attack Speed',moveSpd:'Movement Speed',cdr:'CDR',critChance:'Crit Chance',hpRegen:'HP Regen',manaRegen:'Mana Regen',lifesteal:'Lifesteal',spellVamp:'Spell Vamp',physPen:'Phys Pen',magPen:'Magic Pen'};
-var STAT_GROUPS=[{label:'Offense',keys:['physAtk','magPow','atkSpd','critChance','physPen','magPen']},{label:'Defense',keys:['hp','mana','physDef','magDef','hpRegen','manaRegen']},{label:'Utility',keys:['moveSpd','cdr','lifesteal','spellVamp']}];
-var STAT_SUFFIX={atkSpd:'%',cdr:'%',critChance:'%',lifesteal:'%',spellVamp:'%',physPen:'%',magPen:'%'};
-var CAT_ICONS={boots:'fa-shoe-prints',attack:'fa-crosshairs',magic:'fa-wand-magic-sparkles',defense:'fa-shield-halved',jungle:'fa-paw'};
-var CAT_LABELS={boots:'Boots',attack:'Attack',magic:'Magic',defense:'Defense',jungle:'Jungle'};
-var ROLES=['Marksman','Fighter','Assassin','Mage','Tank'];
-
-var EMBLEM_SETS=[
-  {id:'assault',name:'Assault',icon:'fa-hand-fist',color:'#C0392B',mainStats:['physAtk','hp','atkSpd']},
-  {id:'assassination',name:'Assassination',icon:'fa-skull-crossbones',color:'#8E1B3D',mainStats:['physAtk','physPen','cdr']},
-  {id:'agility',name:'Agility',icon:'fa-bolt-lightning',color:'#27AE60',mainStats:['physAtk','atkSpd','critChance']},
-  {id:'arcane',name:'Arcane',icon:'fa-hat-wizard',color:'#8E44AD',mainStats:['magPow','magPen','cdr']},
-  {id:'firmness',name:'Firmness',icon:'fa-shield',color:'#2980B9',mainStats:['hp','physDef','magDef']},
-  {id:'courage',name:'Courage',icon:'fa-heart-pulse',color:'#16A085',mainStats:['hp','hpRegen','physDef']},
-  {id:'liberate',name:'Liberate',icon:'fa-dove',color:'#D63384',mainStats:['hp','magDef','mana']},
-  {id:'bounty_hunter',name:'Bounty Hunter',icon:'fa-crosshairs',color:'#E67E22',mainStats:['physAtk','physPen','moveSpd']}
-];
-var EMBLEM_TIERS=[
-  {id:'common',name:'Common',color:'#6b7280'},
-  {id:'rare',name:'Rare',color:'#3b82f6'},
-  {id:'epic',name:'Epic',color:'#a855f7'},
-  {id:'mythic',name:'Mythic',color:'#f59e0b',textColor:'#000'}
-];
-var EMBLEM_MAIN_VALS={
-  physAtk:{common:4,rare:9,epic:16,mythic:26},magPow:{common:4,rare:9,epic:16,mythic:26},
-  hp:{common:40,rare:85,epic:160,mythic:280},mana:{common:30,rare:65,epic:120,mythic:200},
-  physDef:{common:4,rare:9,epic:16,mythic:26},magDef:{common:3,rare:7,epic:13,mythic:22},
-  atkSpd:{common:1,rare:2,epic:3,mythic:5},moveSpd:{common:2,rare:4,epic:6,mythic:8},
-  cdr:{common:1,rare:2,epic:4,mythic:6},critChance:{common:1,rare:2,epic:4,mythic:6},
-  physPen:{common:1,rare:2,epic:4,mythic:6},magPen:{common:1,rare:2,epic:4,mythic:6},
-  hpRegen:{common:2,rare:4,epic:7,mythic:10},lifesteal:{common:1,rare:2,epic:3,mythic:5},
-  manaRegen:{common:1,rare:2,epic:3,mythic:5},spellVamp:{common:1,rare:2,epic:3,mythic:5}
-};
-var EMBLEM_MINOR_VALS={
-  physAtk:{common:1,rare:3,epic:5,mythic:8},magPow:{common:1,rare:3,epic:5,mythic:8},
-  hp:{common:15,rare:30,epic:55,mythic:90},mana:{common:10,rare:25,epic:45,mythic:75},
-  physDef:{common:1,rare:3,epic:6,mythic:10},magDef:{common:1,rare:3,epic:5,mythic:8},
-  atkSpd:{common:1,rare:1,epic:2,mythic:3},moveSpd:{common:2,rare:3,epic:4,mythic:5},
-  cdr:{common:1,rare:1,epic:2,mythic:3},critChance:{common:1,rare:1,epic:2,mythic:3},
-  physPen:{common:1,rare:1,epic:2,mythic:3},magPen:{common:1,rare:1,epic:2,mythic:3},
-  hpRegen:{common:1,rare:2,epic:4,mythic:6},lifesteal:{common:1,rare:1,epic:2,mythic:3},
-  manaRegen:{common:1,rare:2,epic:3,mythic:5},spellVamp:{common:1,rare:1,epic:2,mythic:3}
-};
-
-var HEROES=[
-  {id:'miya',name:'Miya',role:'Marksman',stats:{physAtk:119,hp:2468,mana:418,physDef:17,magDef:15,atkSpd:1.02,moveSpd:265}},
-  {id:'alucard',name:'Alucard',role:'Fighter',stats:{physAtk:121,hp:2740,mana:0,physDef:22,magDef:15,atkSpd:0.93,moveSpd:260}},
-  {id:'layla',name:'Layla',role:'Marksman',stats:{physAtk:117,hp:2415,mana:420,physDef:16,magDef:15,atkSpd:1.0,moveSpd:260}},
-  {id:'tigreal',name:'Tigreal',role:'Tank',stats:{physAtk:112,hp:3325,mana:410,physDef:25,magDef:17,atkSpd:0.83,moveSpd:255}},
-  {id:'zilong',name:'Zilong',role:'Fighter',stats:{physAtk:123,hp:2778,mana:0,physDef:22,magDef:15,atkSpd:0.95,moveSpd:265}},
-  {id:'nana',name:'Nana',role:'Mage',stats:{magPow:115,hp:2472,mana:490,physDef:16,magDef:17,atkSpd:0.83,moveSpd:260}},
-  {id:'saber',name:'Saber',role:'Assassin',stats:{physAtk:118,hp:2579,mana:0,physDef:20,magDef:15,atkSpd:0.93,moveSpd:260}},
-  {id:'eudora',name:'Eudora',role:'Mage',stats:{magPow:118,hp:2379,mana:495,physDef:15,magDef:17,atkSpd:0.85,moveSpd:260}},
-  {id:'chou',name:'Chou',role:'Fighter',stats:{physAtk:120,hp:2845,mana:0,physDef:23,magDef:16,atkSpd:0.95,moveSpd:265}},
-  {id:'kagura',name:'Kagura',role:'Mage',stats:{magPow:116,hp:2455,mana:500,physDef:15,magDef:17,atkSpd:0.83,moveSpd:260}},
-  {id:'granger',name:'Granger',role:'Marksman',stats:{physAtk:122,hp:2520,mana:0,physDef:18,magDef:15,atkSpd:1.0,moveSpd:265}},
-  {id:'lunox',name:'Lunox',role:'Mage',stats:{magPow:117,hp:2480,mana:510,physDef:15,magDef:17,atkSpd:0.83,moveSpd:260}},
-  {id:'hayabusa',name:'Hayabusa',role:'Assassin',stats:{physAtk:119,hp:2580,mana:0,physDef:20,magDef:15,atkSpd:0.93,moveSpd:265}},
-  {id:'minotaur',name:'Minotaur',role:'Tank',stats:{physAtk:107,hp:3560,mana:430,physDef:27,magDef:18,atkSpd:0.83,moveSpd:255}},
-  {id:'esmeralda',name:'Esmeralda',role:'Mage',stats:{magPow:113,hp:2800,mana:480,physDef:23,magDef:17,atkSpd:0.85,moveSpd:260}},
-  {id:'claude',name:'Claude',role:'Marksman',stats:{physAtk:118,hp:2480,mana:0,physDef:17,magDef:15,atkSpd:1.02,moveSpd:265}},
-  {id:'benedetta',name:'Benedetta',role:'Assassin',stats:{physAtk:122,hp:2680,mana:0,physDef:21,magDef:15,atkSpd:0.97,moveSpd:265}},
-  {id:'franco',name:'Franco',role:'Tank',stats:{physAtk:112,hp:3400,mana:420,physDef:26,magDef:18,atkSpd:0.83,moveSpd:250}},
-  {id:'lancelot',name:'Lancelot',role:'Assassin',stats:{physAtk:118,hp:2570,mana:0,physDef:19,magDef:15,atkSpd:0.95,moveSpd:265}},
-  {id:'gusion',name:'Gusion',role:'Assassin',stats:{physAtk:121,hp:2550,mana:0,physDef:18,magDef:15,atkSpd:0.95,moveSpd:265}}
-];
-
-var ITEMS=[
-  {id:'warrior_boots',name:'Warrior Boots',cat:'boots',stats:{physDef:22,moveSpd:45},passive:'Gain 40% Movement Speed for 3s after using a skill'},
-  {id:'arcane_boots',name:'Arcane Boots',cat:'boots',stats:{magPow:15,moveSpd:45},passive:'+15 Magic Power from unique passive'},
-  {id:'tough_boots',name:'Tough Boots',cat:'boots',stats:{magDef:22,moveSpd:45},passive:'Reduces CC duration by 30%'},
-  {id:'rapid_boots',name:'Rapid Boots',cat:'boots',stats:{atkSpd:15,moveSpd:45},passive:'Basic attacks grant extra Move Speed'},
-  {id:'magic_shoes',name:'Magic Shoes',cat:'boots',stats:{cdr:10,moveSpd:45},passive:'+10% Cooldown Reduction'},
-  {id:'tender_boots',name:'Tender Boots',cat:'boots',stats:{hpRegen:15,moveSpd:45},passive:'HP Regen increases over time in combat'},
-  {id:'blade_of_despair',name:'Blade of Despair',cat:'attack',stats:{physAtk:170},passive:'After dealing damage, Phys Atk +8% for 3s (max 5 stacks)'},
-  {id:'endless_battle',name:'Endless Battle',cat:'attack',stats:{physAtk:65,atkSpd:25,cdr:5,hp:250,physDef:15},passive:'After skill, next basic attack deals true damage'},
-  {id:'berserkers_fury',name:"Berserker's Fury",cat:'attack',stats:{physAtk:65,critChance:25},passive:'Crit damage increases to 200%'},
-  {id:'scarlet_phantom',name:'Scarlet Phantom',cat:'attack',stats:{physAtk:30,atkSpd:25,critChance:20},passive:'Crit resets basic attack cooldown'},
-  {id:'demon_hunter_sword',name:'Demon Hunter Sword',cat:'attack',stats:{physAtk:35,atkSpd:25},passive:"Basic attacks deal 8% of target's HP as bonus damage"},
-  {id:'malefic_roar',name:'Malefic Roar',cat:'attack',stats:{physAtk:60,physPen:35},passive:'+20% Phys Pen against targets with high armor'},
-  {id:'golden_staff',name:'Golden Staff',cat:'attack',stats:{physAtk:65,atkSpd:15},passive:'Crit chance converts to on-hit damage'},
-  {id:'sea_halberd',name:'Sea Halberd',cat:'attack',stats:{physAtk:80,atkSpd:25},passive:'Reduces target shield and healing by 50%'},
-  {id:'windtalker',name:'Windtalker',cat:'attack',stats:{physAtk:30,atkSpd:40,moveSpd:5},passive:'Every 2 basic attacks trigger chain lightning'},
-  {id:'rose_gold_meteor',name:'Rose Gold Meteor',cat:'attack',stats:{physAtk:60,magDef:30},passive:'Gain a shield when HP drops below 40%'},
-  {id:'corrosion_scythe',name:'Corrosion Scythe',cat:'attack',stats:{physAtk:30,atkSpd:35},passive:'Basic attacks slow enemies, stacking up to 5 times'},
-  {id:'hunter_strike',name:'Hunter Strike',cat:'attack',stats:{physAtk:80,cdr:10,hp:300,physPen:15},passive:'Gain Move Speed after hitting enemy with skill'},
-  {id:'divine_glaive',name:'Divine Glaive',cat:'magic',stats:{magPow:65,magPen:35},passive:'+20% Magic Pen against targets with high MR'},
-  {id:'blood_wings',name:'Blood Wings',cat:'magic',stats:{magPow:150,hp:500},passive:'Gain a shield equal to 20% of Magic Power'},
-  {id:'holy_crystal',name:'Holy Crystal',cat:'magic',stats:{magPow:100},passive:'Magic Power increases with each skill cast'},
-  {id:'clock_of_destiny',name:'Clock of Destiny',cat:'magic',stats:{magPow:60,hp:615,mana:600},passive:'Stacking Magic Power bonus every 6s (max 10 stacks)'},
-  {id:'glow_wand',name:'Glow Wand',cat:'magic',stats:{magPow:75,hp:400},passive:'Skills burn enemies for magic damage over 3s'},
-  {id:'necklace_of_durance',name:'Necklace of Durance',cat:'magic',stats:{magPow:60,moveSpd:5},passive:'Reduce enemy healing by 50% with skills'},
-  {id:'feather_of_heaven',name:'Feather of Heaven',cat:'magic',stats:{magPow:65,atkSpd:15},passive:'Basic attacks deal extra magic damage'},
-  {id:'lightning_truncheon',name:'Lightning Truncheon',cat:'magic',stats:{magPow:75,mana:300},passive:'Every 6s, next skill triggers chain lightning to 3 enemies'},
-  {id:'antique_cuirass',name:'Antique Cuirass',cat:'defense',stats:{hp:920,physDef:54,hpRegen:2},passive:'Reduce enemy Phys Atk by 8% for 2s on skill hit'},
-  {id:'blade_armor',name:'Blade Armor',cat:'defense',stats:{physDef:90},passive:'Reflect 20% of basic attack damage back to attacker'},
-  {id:'dominance_ice',name:'Dominance Ice',cat:'defense',stats:{hp:500,physDef:70,cdr:5},passive:'Slow nearby enemies and reduce their shield power'},
-  {id:'athenas_shield',name:"Athena's Shield",cat:'defense',stats:{hp:850,magDef:62,hpRegen:2},passive:'Gain a magic damage shield that absorbs damage'},
-  {id:'radiant_armor',name:'Radiant Armor',cat:'defense',stats:{hp:800,magDef:52,hpRegen:10},passive:'Regen HP when taking magic damage'},
-  {id:'immortality',name:'Immortality',cat:'defense',stats:{hp:800,physDef:40},passive:'Revive 2s after death with 16% HP (120s cooldown)'},
-  {id:'brute_force_bp',name:'Brute Force Breastplate',cat:'defense',stats:{hp:770,physDef:45,atkSpd:30,cdr:10},passive:'Moving grants Phys Def bonus, up to 30 pts'},
-  {id:'twilight_armor',name:'Twilight Armor',cat:'defense',stats:{hp:1200,magDef:30},passive:'Gain bonus Phys Def when HP is below 50%'},
-  {id:'raptor_machete',name:'Raptor Machete',cat:'jungle',stats:{physAtk:30,lifesteal:15},passive:'Enhanced damage and lifesteal against jungle monsters'},
-  {id:'bloodlust_axe',name:'Bloodlust Axe',cat:'jungle',stats:{physAtk:30,cdr:10,hp:450,spellVamp:10},passive:'Spell Vamp heals from skill damage'}
-];
-
-var getHero=function(id){return HEROES.find(function(h){return h.id===id})||null};
-var getItem=function(id){return ITEMS.find(function(i){return i.id===id})||null};
-var getEmblemSet=function(id){return EMBLEM_SETS.find(function(s){return s.id===id})||null};
-var getEmblemTier=function(id){return EMBLEM_TIERS.find(function(t){return t.id===id})||null};
-var getCatColor=function(cat){return'var(--cat-'+cat+')'};
-var getCatIcon=function(cat){return CAT_ICONS[cat]||'fa-circle'};
-var heroesByRole=function(role){return HEROES.filter(function(h){return h.role===role})};
-function fmtStat(key,val){if(!val)return'0';if(key==='atkSpd')return Number.isInteger(val)?val+'%':val.toFixed(2);return STAT_SUFFIX[key]?val+'%':String(val)}
-function fmtEStat(key,val){if(!val)return'0';return STAT_SUFFIX[key]?val+'%':String(val)}
-function getItemSummary(it){return Object.entries(it.stats).slice(0,3).map(function(e){return'+'+fmtStat(e[0],e[1])+' '+STAT_NAMES[e[0]]}).join(' \u00B7 ')}
-function getEmblemStats(template,allTemplates){var t=allTemplates.find(function(x){return x.id===template.id});if(!t)return{};var s={};if(t.mainStat&&EMBLEM_MAIN_VALS[t.mainStat])s[t.mainStat]=(s[t.mainStat]||0)+EMBLEM_MAIN_VALS[t.mainStat][t.tier];t.minorStats.forEach(function(k){if(k&&EMBLEM_MINOR_VALS[k])s[k]=(s[k]||0)+EMBLEM_MINOR_VALS[k][t.tier]});return s}
-function getEmblemSummary(template,allTemplates){var s=getEmblemStats(template,allTemplates);return Object.entries(s).map(function(e){return'+'+fmtEStat(e[0],e[1])+' '+STAT_NAMES[e[0]]}).join(' \u00B7 ')}
-function calcBuildStats(build,allTemplates){var hero=getHero(build.heroId);var eStats=getEmblemStats({id:build.emblemId},allTemplates);var result={};STAT_KEYS.forEach(function(key){var hv=hero?(hero.stats[key]||0):0;var iv=0;build.itemIds.forEach(function(iid){if(iid){var it=getItem(iid);if(it&&it.stats[key])iv+=it.stats[key]}});var ev=eStats[key]||0;result[key]={hero:hv,items:iv,emblem:ev,total:hv+iv+ev}});return result}
-function getComparableVal(so,key){return key==='atkSpd'?(so.items||0)+(so.emblem||0):(so.total||0)}
-
-var app=Vue.createApp({
-  data:function(){return{theme:'dark',builds:[{id:1,name:'Build 1',heroId:null,emblemId:null,itemIds:[null,null,null,null,null,null]}],nextBuildId:2,emblemTemplates:[],nextEmblemId:1,toasts:[],picker:{visible:false,buildId:null,slotIndex:null,currentItemId:null,buildItemIds:[]},emblemManagerVisible:false,dragState:{draggingId:null,overId:null,side:null}}},
-  computed:{bestMap:function(){if(this.builds.length<2)return{};var best={};var self=this;STAT_KEYS.forEach(function(key){var mx=-Infinity,mid=null;self.builds.forEach(function(b){var s=calcBuildStats(b,self.emblemTemplates)[key];var v=getComparableVal(s,key);if(v>mx){mx=v;mid=b.id}});if(mx>0)best[key]=mid});return best}},
-  watch:{theme:function(v){document.documentElement.setAttribute('data-theme',v)},builds:{handler:function(){this.persist()},deep:true},emblemTemplates:{handler:function(){this.persist()},deep:true}},
-  mounted:function(){this.load();document.documentElement.setAttribute('data-theme',this.theme);this._kh=this.onKey.bind(this);document.addEventListener('keydown',this._kh)},
-  beforeUnmount:function(){document.removeEventListener('keydown',this._kh)},
-  methods:{
-    persist:function(){try{localStorage.setItem('mlb-v3',JSON.stringify({theme:this.theme,builds:this.builds,nextBuildId:this.nextBuildId,emblemTemplates:this.emblemTemplates,nextEmblemId:this.nextEmblemId}))}catch(e){}},
-    load:function(){try{var d=JSON.parse(localStorage.getItem('mlb-v3'));if(d){this.theme=d.theme||'dark';this.builds=d.builds&&d.builds.length?d.builds:this.builds;this.nextBuildId=d.nextBuildId||2;this.emblemTemplates=d.emblemTemplates||[];this.nextEmblemId=d.nextEmblemId||1;this.builds.forEach(function(b){if(b.emblemId===undefined)b.emblemId=null})}}catch(e){}},
-    toast:function(msg,type){var id=Date.now()+Math.random();this.toasts.push({id:id,msg:msg,type:type||'success'});var self=this;setTimeout(function(){self.toasts=self.toasts.filter(function(t){return t.id!==id})},2500)},
-    toggleTheme:function(){this.theme=this.theme==='dark'?'light':'dark'},
-    onKey:function(e){if(e.key==='Escape'){if(this.picker.visible)this.closePicker();else if(this.emblemManagerVisible)this.emblemManagerVisible=false}},
-    newBuild:function(){var id=this.nextBuildId++;this.builds.push({id:id,name:'Build '+id,heroId:null,emblemId:null,itemIds:[null,null,null,null,null,null]});this.toast('New build created');var self=this;Vue.nextTick(function(){var w=self.$refs.deckWrap;if(w)w.scrollTo({left:w.scrollWidth,behavior:'smooth'})})},
-    onRename:function(p){var b=this.builds.find(function(x){return x.id===p.id});if(b)b.name=p.name.trim()||'Build '+p.id},
-    onDeleteBuild:function(id){if(this.builds.length<=1){this.toast('Cannot delete the last build','error');return}this.builds=this.builds.filter(function(b){return b.id!==id});this.toast('Build deleted','warn')},
-    onDuplicate:function(id){var s=this.builds.find(function(b){return b.id===id});if(!s)return;var nid=this.nextBuildId++;this.builds.push({id:nid,name:s.name+' (copy)',heroId:s.heroId,emblemId:s.emblemId,itemIds:s.itemIds.slice()});this.toast('Build duplicated');var self=this;Vue.nextTick(function(){var w=self.$refs.deckWrap;if(w)w.scrollTo({left:w.scrollWidth,behavior:'smooth'})})},
-    onMove:function(p){var i=this.builds.findIndex(function(b){return b.id===p.id});if(i<0)return;var ni=i+p.dir;if(ni<0||ni>=this.builds.length)return;var m=this.builds.splice(i,1)[0];this.builds.splice(ni,0,m);this.toast('Build reordered')},
-    onSetHero:function(p){var b=this.builds.find(function(x){return x.id===p.id});if(b)b.heroId=p.heroId||null},
-    onSetEmblem:function(p){var b=this.builds.find(function(x){return x.id===p.id});if(b)b.emblemId=p.emblemId||null},
-    onRemoveItem:function(p){var b=this.builds.find(function(x){return x.id===p.id});if(b){b.itemIds[p.slotIndex]=null;this.toast('Item removed','warn')}},
-    onOpenPicker:function(p){var b=this.builds.find(function(x){return x.id===p.id});if(!b)return;this.picker={visible:true,buildId:p.id,slotIndex:p.slotIndex,currentItemId:b.itemIds[p.slotIndex]||null,buildItemIds:b.itemIds.slice()}},
-    closePicker:function(){this.picker.visible=false},
-    onPickItem:function(itemId){var self=this;var b=this.builds.find(function(x){return x.id===self.picker.buildId});if(!b)return;if(b.itemIds.some(function(v,i){return i!==self.picker.slotIndex&&v===itemId})){this.toast('Item already equipped','warn');return}b.itemIds[this.picker.slotIndex]=itemId;this.picker.visible=false;this.toast('Item equipped')},
-    onRemoveItemFromPicker:function(){var self=this;var b=this.builds.find(function(x){return x.id===self.picker.buildId});if(!b)return;b.itemIds[this.picker.slotIndex]=null;this.picker.visible=false;this.toast('Item removed','warn')},
-    onSaveTemplate:function(data){if(data.editingId!==null){var idx=this.emblemTemplates.findIndex(function(t){return t.id===data.editingId});if(idx!==-1)Object.assign(this.emblemTemplates[idx],{name:data.name,setId:data.setId,tier:data.tier,mainStat:data.mainStat,minorStats:data.minorStats});this.toast('Template updated')}else{this.emblemTemplates.push({id:this.nextEmblemId++,name:data.name,setId:data.setId,tier:data.tier,mainStat:data.mainStat,minorStats:data.minorStats});this.toast('Template created')}},
-    onDeleteTemplate:function(id){this.emblemTemplates=this.emblemTemplates.filter(function(t){return t.id!==id});this.builds.forEach(function(b){if(b.emblemId===id)b.emblemId=null});this.toast('Template deleted','warn')},
-    onDragStart:function(e,id){e.dataTransfer.effectAllowed='move';e.dataTransfer.setData('text/plain',String(id));this.dragState.draggingId=id},
-    onDragOver:function(e,id){e.preventDefault();e.dataTransfer.dropEffect='move';if(id===this.dragState.draggingId)return;var rect=e.currentTarget.getBoundingClientRect();var side=e.clientX<rect.left+rect.width/2?'left':'right';if(this.dragState.overId!==id||this.dragState.side!==side){this.dragState.overId=id;this.dragState.side=side}},
-    onDragLeave:function(e,id){if(e.relatedTarget&&e.currentTarget.contains(e.relatedTarget))return;if(this.dragState.overId===id){this.dragState.overId=null;this.dragState.side=null}},
-    onDrop:function(e,id){e.preventDefault();var fId=this.dragState.draggingId,side=this.dragState.side;if(!fId){this.dragState={draggingId:null,overId:null,side:null};return}var fi=this.builds.findIndex(function(b){return b.id===fId});if(fi<0){this.dragState={draggingId:null,overId:null,side:null};return}var m=this.builds.splice(fi,1)[0];var ni=this.builds.findIndex(function(b){return b.id===id});if(side==='right')ni++;this.builds.splice(ni,0,m);this.dragState={draggingId:null,overId:null,side:null};this.toast('Build reordered')},
-    onDragEnd:function(){this.dragState={draggingId:null,overId:null,side:null}}
-  }
-});
-
-app.component('deck-column',{
-  props:['build','index','bestMap','isFirst','isLast','templates','dragState'],
-  emits:['rename','delete','duplicate','move','set-hero','set-emblem','remove-item','open-picker','open-emblem','drag-start','drag-over','drag-leave','drop','drag-end'],
-  data:function(){return{canDrag:false}},
-  template:'\
-    <div class="deck-column" :class="{dragging:dragState.draggingId===build.id}" draggable="true" @dragstart="onDragStart" @dragend="onDragEnd" @dragover="$emit(\'drag-over\',$event,build.id)" @dragleave="$emit(\'drag-leave\',$event,build.id)" @drop="$emit(\'drop\',$event,build.id)">\
-      <div class="drop-indicator left" v-show="dragState.overId===build.id&&dragState.side===\'left\'"></div>\
-      <div class="drop-indicator right" v-show="dragState.overId===build.id&&dragState.side===\'right\'"></div>\
-      <div class="deck-header">\
-        <div class="drag-handle" @mousedown="canDrag=true" @mouseup="canDrag=false" @mouseleave="canDrag=false" title="Drag to reorder"><i class="fa-solid fa-grip-vertical"></i></div>\
-        <input class="deck-name-input" :value="build.name" @change="$emit(\'rename\',{id:build.id,name:$event.target.value})" maxlength="30" spellcheck="false">\
-        <div class="move-btns">\
-          <button class="move-btn" :disabled="isFirst" @click="$emit(\'move\',{id:build.id,dir:-1})"><i class="fa-solid fa-chevron-left"></i></button>\
-          <button class="move-btn" :disabled="isLast" @click="$emit(\'move\',{id:build.id,dir:1})"><i class="fa-solid fa-chevron-right"></i></button>\
-        </div>\
-        <button class="btn btn-sm btn-icon btn-dup" @click="$emit(\'duplicate\',build.id)" title="Duplicate"><i class="fa-solid fa-clone"></i></button>\
-        <button class="btn btn-sm btn-icon btn-danger" @click="$emit(\'delete\',build.id)" title="Delete"><i class="fa-solid fa-trash-can"></i></button>\
-      </div>\
-      <div class="deck-section">\
-        <select class="sel" :value="build.heroId" @change="$emit(\'set-hero\',{id:build.id,heroId:$event.target.value||null})">\
-          <option value="">No Hero Selected</option>\
-          <optgroup v-for="role in ROLES" :key="role" :label="role"><option v-for="h in getHeroesByRole(role)" :key="h.id" :value="h.id">{{h.name}}</option></optgroup>\
-        </select>\
-      </div>\
-      <div class="deck-section" :style="{borderBottomColor:hasEmblem?\'var(--emblem-dim)\':\'var(--border)\'}">\
-        <div class="emblem-row">\
-          <i class="fa-solid fa-gem"></i>\
-          <select class="sel" :value="build.emblemId" @change="onEmblemChange">\
-            <option value="">No Emblem (optional)</option>\
-            <optgroup v-for="(tpls,setName) in templatesBySet" :key="setName" :label="setName"><option v-for="tpl in tpls" :key="tpl.id" :value="tpl.id">{{tpl.name}} ({{getTierName(tpl.tier)}})</option></optgroup>\
-          </select>\
-          <button class="emblem-gear" @click="$emit(\'open-emblem\')" title="Manage emblem templates"><i class="fa-solid fa-gear"></i></button>\
-        </div>\
-        <div v-if="emblemTpl" class="emblem-info">\
-          <span class="emblem-set-tag" :style="{background:emblemSet.color}"><i class="fa-solid" :class="emblemSet.icon" style="margin-right:3px;font-size:.55rem"></i>{{emblemSet.name}}</span>\
-          <span class="emblem-tier-tag" :style="{background:emblemTier.color,color:emblemTier.textColor||\'#fff\'}">{{emblemTier.name}}</span>\
-          <span class="emblem-stats-text">{{emblemSummary}}</span>\
-        </div>\
-      </div>\
-      <div class="stat-legend">\
-        <div class="legend-item"><div class="legend-dot" style="background:var(--hero)"></div>Hero</div>\
-        <div class="legend-item"><div class="legend-dot" style="background:var(--build)"></div>Items</div>\
-        <div v-if="hasEmblem" class="legend-item"><div class="legend-dot" style="background:var(--emblem)"></div>Emblem</div>\
-        <div v-if="hasBestMap" class="legend-item"><div class="legend-dot" style="background:var(--best)"></div>Best</div>\
-      </div>\
-      <div class="deck-items">\
-        <template v-for="(iid,i) in build.itemIds" :key="i">\
-          <div v-if="iid" class="item-slot filled" @click="$emit(\'open-picker\',{id:build.id,slotIndex:i})">\
-            <div class="item-cat-bar" :style="{background:getCatColor(slotItem(i).cat)}"></div>\
-            <div class="item-slot-info"><span class="item-slot-name">{{slotItem(i).name}}</span><span class="item-slot-stats">{{getItemSummary(slotItem(i))}}</span></div>\
-            <button class="item-remove" @click.stop="$emit(\'remove-item\',{id:build.id,slotIndex:i})"><i class="fa-solid fa-xmark"></i></button>\
-          </div>\
-          <div v-else class="item-slot" @click="$emit(\'open-picker\',{id:build.id,slotIndex:i})"><i class="fa-solid fa-plus"></i></div>\
-        </template>\
-      </div>\
-      <div class="deck-stats">\
-        <template v-for="g in STAT_GROUPS" :key="g.label">\
-          <div class="stat-group-label">{{g.label}}</div>\
-          <div v-for="key in g.keys" :key="key" class="stat-row" :class="{best:isBest(key)}">\
-            <span class="stat-label">{{STAT_NAMES[key]}}</span>\
-            <span class="stat-vals">\
-              <span :class="stats[key].hero?\'stat-hero\':\'stat-zero\'">{{fmtStat(key,stats[key].hero)}}</span>\
-              <template v-if="stats[key].items"><span class="stat-sep">+</span><span class="stat-build">{{fmtStat(key,stats[key].items)}}</span></template>\
-              <template v-if="stats[key].emblem"><span class="stat-sep">+</span><span class="stat-emblem">{{fmtStat(key,stats[key].emblem)}}</span></template>\
-              <template v-if="key!==\'atkSpd\'"><span class="stat-sep">=</span><span class="stat-total">{{fmtStat(key,stats[key].total)}}</span></template>\
-            </span>\
-            <span v-if="isBest(key)" class="best-badge"><i class="fa-solid fa-caret-up"></i></span>\
-          </div>\
-        </template>\
-      </div>\
-    </div>',
-  computed:{
-    ROLES:function(){return ROLES},STAT_GROUPS:function(){return STAT_GROUPS},STAT_NAMES:function(){return STAT_NAMES},
-    hero:function(){return getHero(this.build.heroId)},hasHero:function(){return!!this.hero},
-    emblemTpl:function(){var self=this;return this.build.emblemId?this.templates.find(function(t){return t.id===self.build.emblemId})||null:null},
-    emblemSet:function(){return this.emblemTpl?getEmblemSet(this.emblemTpl.setId):{color:'#666',icon:'fa-gem',name:'?'}},
-    emblemTier:function(){return this.emblemTpl?getEmblemTier(this.emblemTpl.tier):{color:'#666',name:'',textColor:'#fff'}},
-    hasEmblem:function(){return!!this.emblemTpl},
-    hasBestMap:function(){return Object.keys(this.bestMap).length>0},
-    stats:function(){return calcBuildStats(this.build,this.templates)},
-    templatesBySet:function(){var bySet={};var self=this;this.templates.forEach(function(t){var set=getEmblemSet(t.setId);var sn=set?set.name:'Other';if(!bySet[sn])bySet[sn]=[];bySet[sn].push(t)});return bySet},
-    emblemSummary:function(){return getEmblemSummary(this.emblemTpl,this.templates)}
-  },
-  methods:{
-    getHeroesByRole:heroesByRole,getCatColor:getCatColor,getItemSummary:getItemSummary,fmtStat:fmtStat,
-    slotItem:function(i){return getItem(this.build.itemIds[i])||{name:'',cat:'boots',stats:{}}},
-    getTierName:function(tid){var t=getEmblemTier(tid);return t?t.name:tid},
-    isBest:function(key){return this.bestMap[key]===this.build.id&&getComparableVal(this.stats[key],key)>0},
-    onEmblemChange:function(e){this.$emit('set-emblem',{id:this.build.id,emblemId:e.target.value?Number(e.target.value):null})},
-    onDragStart:function(e){
-      if(!this.canDrag){e.preventDefault();return}
-      this.canDrag=false;
-      this.$emit('drag-start',e,this.build.id);
-    },
-    onDragEnd:function(){this.canDrag=false;this.$emit('drag-end')}
-  }
-});
-
-app.component('item-picker',{
-  props:{visible:Boolean,buildItemIds:Array,currentItemId:[String,Number,null]},
-  emits:['close','pick','remove'],
-  template:'\
-    <div class="overlay" :class="{active:visible}" v-if="visible">\
-      <div class="overlay-backdrop" @click="$emit(\'close\')"></div>\
-      <div class="modal" style="width:620px">\
-        <div class="modal-header"><h3>Select Item</h3><button class="btn btn-icon" @click="$emit(\'close\')"><i class="fa-solid fa-xmark"></i></button></div>\
-        <div class="picker-current" v-if="currentItem"><div class="picker-current-item"><div class="picker-current-bar" :style="{background:getCatColor(currentItem.cat)}"></div><span><strong>{{currentItem.name}}</strong></span></div><button class="btn btn-danger btn-sm" @click="$emit(\'remove\')"><i class="fa-solid fa-xmark"></i> Remove</button></div>\
-        <div class="picker-search"><i class="fa-solid fa-magnifying-glass"></i><input type="text" v-model="search" placeholder="Search items..." ref="searchInput"></div>\
-        <div class="picker-cats"><button v-for="c in categories" :key="c" class="cat-pill" :class="{active:category===c}" @click="category=c">{{c===\'all\'?\'All Items\':CAT_LABELS[c]}}</button></div>\
-        <div class="picker-grid">\
-          <div v-if="!filteredItems.length" style="grid-column:1/-1;text-align:center;color:var(--muted);padding:30px;font-size:.85rem">No items found</div>\
-          <div v-for="it in filteredItems" :key="it.id" class="picker-item" :class="{disabled:usedIds.has(it.id),current:it.id===currentItemId}" @click="onPick(it.id)">\
-            <div class="picker-item-icon" :style="{background:getCatColor(it.cat)}"><i class="fa-solid" :class="getCatIcon(it.cat)"></i></div>\
-            <div class="picker-item-info"><div class="picker-item-name">{{it.name}}</div><div class="picker-item-stats">{{getItemSummary(it)}}</div><div v-if="it.passive" class="picker-item-passive">{{it.passive}}</div></div>\
-          </div>\
-        </div>\
-      </div>\
-    </div>',
-  data:function(){return{search:'',category:'all',categories:['all','boots','attack','magic','defense','jungle'],CAT_LABELS:CAT_LABELS}},
-  computed:{
-    currentItem:function(){return this.currentItemId?getItem(this.currentItemId):null},
-    usedIds:function(){var s=new Set(this.buildItemIds.filter(Boolean));if(this.currentItemId)s.delete(this.currentItemId);return s},
-    filteredItems:function(){var list=ITEMS;var self=this;if(this.category!=='all')list=list.filter(function(i){return i.cat===self.category});if(this.search){var q=this.search.toLowerCase();list=list.filter(function(i){return i.name.toLowerCase().includes(q)||(i.passive&&i.passive.toLowerCase().includes(q))})}return list}
-  },
-  watch:{visible:function(v){if(v){this.search='';this.category='all';var self=this;Vue.nextTick(function(){if(self.$refs.searchInput)self.$refs.searchInput.focus()})}}},
-  methods:{getCatColor:getCatColor,getCatIcon:getCatIcon,getItemSummary:getItemSummary,onPick:function(id){if(this.usedIds.has(id))return;this.$emit('pick',id)}}
-});
-
-app.component('emblem-manager',{
-  props:{visible:Boolean,templates:Array},
-  emits:['close','save','delete'],
-  template:'\
-    <div class="overlay" :class="{active:visible}" v-if="visible">\
-      <div class="overlay-backdrop" @click="$emit(\'close\')"></div>\
-      <div class="modal emblem-modal">\
-        <div class="modal-header"><h3><i class="fa-solid fa-gem" style="color:var(--emblem)"></i> Emblem Templates</h3><button class="btn btn-icon" @click="$emit(\'close\')"><i class="fa-solid fa-xmark"></i></button></div>\
-        <div class="emblem-body">\
-          <div class="emblem-list-panel">\
-            <div class="emblem-list-header"><span>Templates</span><button class="btn btn-sm btn-accent" @click="createNew"><i class="fa-solid fa-plus"></i> New</button></div>\
-            <div class="emblem-list-scroll">\
-              <div v-if="!templates.length" class="emblem-list-empty"><i class="fa-solid fa-gem"></i><p>No emblem templates yet.<br>Click "New" to create one.</p></div>\
-              <div v-for="t in templates" :key="t.id" class="emblem-tpl" :class="{active:form.editingId===t.id}" @click="editTemplate(t.id)">\
-                <div class="emblem-tpl-top"><div class="emblem-tpl-icon" :style="{background:getSet(t.setId).color}"><i class="fa-solid" :class="getSet(t.setId).icon"></i></div><span class="emblem-tpl-name">{{t.name}}</span><span class="emblem-tpl-tier" :style="{background:getTier(t.tier).color,color:getTier(t.tier).textColor||\'#fff\'}">{{getTier(t.tier).name}}</span></div>\
-                <div class="emblem-tpl-main">{{t.mainStat?\'Main: +\'+fmtEStat(t.mainStat,mainVal(t))+\' \'+STAT_NAMES[t.mainStat]:\'No main stat\'}}</div>\
-                <div class="emblem-tpl-actions" @click.stop><button class="btn btn-sm btn-dup" @click="editTemplate(t.id)" title="Edit"><i class="fa-solid fa-pen" style="font-size:.6rem"></i></button><button class="btn btn-sm btn-danger" @click="deleteTemplate(t.id)" title="Delete"><i class="fa-solid fa-trash-can" style="font-size:.6rem"></i></button></div>\
-              </div>\
-            </div>\
-          </div>\
-          <div class="emblem-form-panel">\
-            <div class="emblem-form-title">{{form.editingId!==null?\'Edit Template\':\'New Template\'}}</div>\
-            <div class="form-group"><label class="form-label">Template Name</label><input class="form-input" type="text" v-model="form.name" placeholder="e.g. Fighter Burst" maxlength="30"></div>\
-            <div class="form-group"><label class="form-label">Emblem Set</label><select class="form-sel" v-model="form.setId"><option v-for="s in EMBLEM_SETS" :key="s.id" :value="s.id">{{s.name}}</option></select></div>\
-            <div class="form-group"><label class="form-label">Tier</label><div class="tier-pills"><button v-for="t in EMBLEM_TIERS" :key="t.id" type="button" class="tier-pill-btn" :class="{active:form.tier===t.id}" :style="form.tier===t.id?{background:t.color,color:t.textColor||\'#fff\'}:{}" @click="form.tier=t.id">{{t.name}}</button></div></div>\
-            <div class="form-group"><label class="form-label">Main Stat</label><select class="form-sel" v-model="form.mainStat"><option value="">-- Select --</option><option v-for="k in availableMainStats" :key="k" :value="k">{{mainStatLabel(k)}}</option></select></div>\
-            <div class="form-group"><label class="form-label">Minor Stats (optional)</label><div class="minor-slots"><div v-for="i in 3" :key="i"><div class="minor-slot-label">Minor Stat {{i}}</div><select class="form-sel" :value="form.minorStats[i-1]" @change="form.minorStats[i-1]=$event.target.value"><option value="">-- None --</option><option v-for="k in availableMinorStats(i-1)" :key="k" :value="k">{{minorStatLabel(k)}}</option></select></div></div></div>\
-            <div v-if="previewStats.length" class="emblem-preview"><div class="emblem-preview-title">Stat Preview</div><div v-for="p in previewStats" :key="p.key" class="emblem-preview-stat" :class="p.isMain?\'main-stat\':\'minor-stat\'"><span>{{p.isMain?\'Main: \':\'\'}}{{STAT_NAMES[p.key]}}</span><span class="val">+{{fmtEStat(p.key,p.val)}}</span></div></div>\
-            <div class="form-actions"><button v-if="form.editingId!==null" class="btn btn-sm btn-danger" @click="createNew">Cancel</button><button class="btn btn-accent" @click="saveTemplate"><i class="fa-solid fa-check"></i> {{form.editingId!==null?\'Update\':\'Save\'}} Template</button></div>\
-          </div>\
-        </div>\
-      </div>\
-    </div>',
-  data:function(){return{EMBLEM_SETS:EMBLEM_SETS,EMBLEM_TIERS:EMBLEM_TIERS,EMBLEM_MAIN_VALS:EMBLEM_MAIN_VALS,EMBLEM_MINOR_VALS:EMBLEM_MINOR_VALS,STAT_NAMES:STAT_NAMES,form:{editingId:null,name:'',setId:'assault',tier:'epic',mainStat:'',minorStats:['','','']}}},
-  computed:{
-    availableMainStats:function(){var s=getEmblemSet(this.form.setId);return s?s.mainStats:[]},
-    previewStats:function(){var list=[];var self=this;if(this.form.mainStat)list.push({key:this.form.mainStat,val:EMBLEM_MAIN_VALS[this.form.mainStat]?EMBLEM_MAIN_VALS[this.form.mainStat][this.form.tier]||0:0,isMain:true});this.form.minorStats.forEach(function(k){if(k)list.push({key:k,val:EMBLEM_MINOR_VALS[k]?EMBLEM_MINOR_VALS[k][self.form.tier]||0:0,isMain:false})});return list}
-  },
-  watch:{
-    'form.setId':function(){var s=getEmblemSet(this.form.setId);var self=this;if(s&&!s.mainStats.includes(this.form.mainStat))this.form.mainStat='';this.form.minorStats=this.form.minorStats.map(function(ms){return ms===self.form.mainStat?'':ms})},
-    'form.mainStat':function(v){if(!v)return;var self=this;this.form.minorStats=this.form.minorStats.map(function(ms){return ms===v?'':ms})}
-  },
-  methods:{
-    getSet:function(id){return getEmblemSet(id)||{color:'#666',icon:'fa-gem',name:'?'}},
-    getTier:function(id){return getEmblemTier(id)||{color:'#666',name:id}},
-    fmtEStat:fmtEStat,
-    mainVal:function(t){return EMBLEM_MAIN_VALS[t.mainStat]?EMBLEM_MAIN_VALS[t.mainStat][t.tier]||0:0},
-    mainStatLabel:function(k){return STAT_NAMES[k]+' (+'+fmtEStat(k,EMBLEM_MAIN_VALS[k][this.form.tier])+')'},
-    minorStatLabel:function(k){return STAT_NAMES[k]+' (+'+fmtEStat(k,EMBLEM_MINOR_VALS[k][this.form.tier])+')'},
-    availableMinorStats:function(slotIdx){var excluded=new Set();var self=this;if(this.form.mainStat)excluded.add(this.form.mainStat);this.form.minorStats.forEach(function(s,j){if(j!==slotIdx&&s)excluded.add(s)});return Object.keys(EMBLEM_MINOR_VALS).filter(function(k){return!excluded.has(k)})},
-    createNew:function(){this.form={editingId:null,name:'',setId:'assault',tier:'epic',mainStat:'',minorStats:['','','']}},
-    editTemplate:function(id){var t=this.templates.find(function(x){return x.id===id});if(!t)return;this.form={editingId:id,name:t.name,setId:t.setId,tier:t.tier,mainStat:t.mainStat||'',minorStats:t.minorStats.slice()}},
-    saveTemplate:function(){if(!this.form.name.trim()){this.$emit('close');return}if(!this.form.mainStat){this.$emit('close');return}this.$emit('save',{editingId:this.form.editingId,name:this.form.name.trim(),setId:this.form.setId,tier:this.form.tier,mainStat:this.form.mainStat,minorStats:this.form.minorStats.slice()});this.createNew()},
-    deleteTemplate:function(id){this.$emit('delete',id);if(this.form.editingId===id)this.createNew()}
-  }
-});
-
-app.mount('#app');
-</script>
-</body>
+    <noscript>
+      <div class="noscript-msg">
+        <div>
+          <h1>Mobile Legends Items Builder</h1>
+          <p>
+            Plan and optimize the best Mobile Legends item builds for every hero. Explore powerful
+            MLBB strategies, item combinations, and emblems. Please enable JavaScript to use the
+            full interactive builder.
+          </p>
+        </div>
+      </div>
+    </noscript>
+    <div id="app"></div>
+  </body>
 </html>

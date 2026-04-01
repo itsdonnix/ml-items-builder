@@ -1,0 +1,6 @@
+[
+  { "id": "common", "name": "Common", "color": "#9CA3AF" },
+  { "id": "rare", "name": "Rare", "color": "#0EA5E9" },
+  { "id": "epic", "name": "Epic", "color": "#9333EA" },
+  { "id": "mythic", "name": "Mythic", "color": "#F59E0B", "textColor": "#1F2937" }
+]

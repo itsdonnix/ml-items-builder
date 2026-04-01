@@ -1,0 +1,38 @@
+{
+  "main": {
+    "physAtk": { "common": 4, "rare": 9, "epic": 16, "mythic": 26 },
+    "magPow": { "common": 4, "rare": 9, "epic": 16, "mythic": 26 },
+    "hp": { "common": 40, "rare": 85, "epic": 160, "mythic": 280 },
+    "mana": { "common": 30, "rare": 65, "epic": 120, "mythic": 200 },
+    "physDef": { "common": 4, "rare": 9, "epic": 16, "mythic": 26 },
+    "magDef": { "common": 3, "rare": 7, "epic": 13, "mythic": 22 },
+    "atkSpd": { "common": 1, "rare": 2, "epic": 3, "mythic": 5 },
+    "moveSpd": { "common": 2, "rare": 4, "epic": 6, "mythic": 8 },
+    "cdr": { "common": 1, "rare": 2, "epic": 4, "mythic": 6 },
+    "critChance": { "common": 1, "rare": 2, "epic": 4, "mythic": 6 },
+    "physPen": { "common": 1, "rare": 2, "epic": 4, "mythic": 6 },
+    "magPen": { "common": 1, "rare": 2, "epic": 4, "mythic": 6 },
+    "hpRegen": { "common": 2, "rare": 4, "epic": 7, "mythic": 10 },
+    "lifesteal": { "common": 1, "rare": 2, "epic": 3, "mythic": 5 },
+    "manaRegen": { "common": 1, "rare": 2, "epic": 3, "mythic": 5 },
+    "spellVamp": { "common": 1, "rare": 2, "epic": 3, "mythic": 5 }
+  },
+  "minor": {
+    "physAtk": { "common": 1, "rare": 3, "epic": 5, "mythic": 8 },
+    "magPow": { "common": 1, "rare": 3, "epic": 5, "mythic": 8 },
+    "hp": { "common": 15, "rare": 30, "epic": 55, "mythic": 90 },
+    "mana": { "common": 10, "rare": 25, "epic": 45, "mythic": 75 },
+    "physDef": { "common": 1, "rare": 3, "epic": 6, "mythic": 10 },
+    "magDef": { "common": 1, "rare": 3, "epic": 5, "mythic": 8 },
+    "atkSpd": { "common": 1, "rare": 1, "epic": 2, "mythic": 3 },
+    "moveSpd": { "common": 2, "rare": 3, "epic": 4, "mythic": 5 },
+    "cdr": { "common": 1, "rare": 1, "epic": 2, "mythic": 3 },
+    "critChance": { "common": 1, "rare": 1, "epic": 2, "mythic": 3 },
+    "physPen": { "common": 1, "rare": 1, "epic": 2, "mythic": 3 },
+    "magPen": { "common": 1, "rare": 1, "epic": 2, "mythic": 3 },
+    "hpRegen": { "common": 1, "rare": 2, "epic": 4, "mythic": 6 },
+    "lifesteal": { "common": 1, "rare": 1, "epic": 2, "mythic": 3 },
+    "manaRegen": { "common": 1, "rare": 2, "epic": 3, "mythic": 5 },
+    "spellVamp": { "common": 1, "rare": 1, "epic": 2, "mythic": 3 }
+  }
+}
