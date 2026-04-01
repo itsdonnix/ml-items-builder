@@ -1,0 +1,214 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--font-u);
+  background: var(--bg);
+  color: var(--text);
+  height: 100vh;
+  overflow: hidden;
+  transition:
+    background 0.4s,
+    color 0.4s;
+}
+
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--muted);
+}
+
+/* ---- Buttons ---- */
+
+.btn {
+  font-family: var(--font-u);
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 7px 16px;
+  border-radius: 7px;
+  border: 1px solid var(--border);
+  background: var(--card);
+  color: var(--text);
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+.btn:hover {
+  border-color: var(--accent);
+  background: var(--accent-dim);
+}
+.btn-accent {
+  background: var(--accent);
+  color: #000;
+  border-color: var(--accent);
+}
+.btn-accent:hover {
+  background: var(--accent-h);
+  border-color: var(--accent-h);
+}
+.btn-icon {
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  justify-content: center;
+  border-radius: 8px;
+}
+.btn-danger {
+  border-color: var(--danger);
+  color: var(--danger);
+}
+.btn-danger:hover {
+  background: rgba(239, 68, 68, 0.1);
+}
+.btn-dup {
+  border-color: var(--hero);
+  color: var(--hero);
+}
+.btn-dup:hover {
+  background: var(--hero-dim);
+}
+.btn-emblem {
+  border-color: var(--emblem);
+  color: var(--emblem);
+}
+.btn-emblem:hover {
+  background: var(--emblem-dim);
+}
+.btn-sm {
+  padding: 4px 10px;
+  font-size: 0.7rem;
+  border-radius: 5px;
+}
+.btn-sm.btn-icon {
+  width: 26px;
+  height: 26px;
+  font-size: 0.65rem;
+}
+
+/* ---- Selects / Forms ---- */
+
+.sel,
+.form-sel,
+.form-input {
+  width: 100%;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-family: var(--font-u);
+  font-size: 0.82rem;
+  padding: 8px 12px;
+  border-radius: 8px;
+  outline: none;
+  transition: border 0.2s;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23686880' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+}
+.sel {
+  font-size: 0.78rem;
+  padding: 6px 10px;
+  border-radius: 7px;
+  cursor: pointer;
+}
+.form-input {
+  appearance: auto;
+  -webkit-appearance: auto;
+  background-image: none;
+}
+.sel:focus,
+.form-sel:focus,
+.form-input:focus {
+  border-color: var(--accent);
+}
+.form-input::placeholder {
+  color: var(--muted);
+}
+.sel optgroup {
+  font-weight: 600;
+  font-style: normal;
+}
+.sel option,
+.form-sel option {
+  background: var(--card);
+  color: var(--text);
+}
+
+/* ---- Overlay / Modal base ---- */
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: none;
+}
+.overlay.active {
+  display: flex;
+}
+.overlay-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  animation: fadeIn 0.2s;
+}
+
+.modal {
+  position: relative;
+  margin: auto;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  max-width: 95vw;
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: var(--shadow);
+  animation: modalIn 0.25s ease-out;
+  z-index: 1;
+}
+
+.modal-header {
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border);
+}
+.modal-header h3 {
+  font-family: var(--font-d);
+  font-weight: 700;
+  font-size: 1.15rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+@media (max-width: 768px) {
+  .modal {
+    width: 98vw;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0s !important;
+    transition-duration: 0s !important;
+  }
+}

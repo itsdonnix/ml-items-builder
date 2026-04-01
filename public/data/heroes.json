@@ -1,0 +1,22 @@
+[
+  { "id": "miya", "name": "Miya", "role": "Marksman", "stats": { "physAtk": 119, "hp": 2468, "mana": 418, "physDef": 17, "magDef": 15, "atkSpd": 1.02, "moveSpd": 265 } },
+  { "id": "alucard", "name": "Alucard", "role": "Fighter", "stats": { "physAtk": 121, "hp": 2740, "mana": 0, "physDef": 22, "magDef": 15, "atkSpd": 0.93, "moveSpd": 260 } },
+  { "id": "layla", "name": "Layla", "role": "Marksman", "stats": { "physAtk": 117, "hp": 2415, "mana": 420, "physDef": 16, "magDef": 15, "atkSpd": 1.0, "moveSpd": 260 } },
+  { "id": "tigreal", "name": "Tigreal", "role": "Tank", "stats": { "physAtk": 112, "hp": 3325, "mana": 410, "physDef": 25, "magDef": 17, "atkSpd": 0.83, "moveSpd": 255 } },
+  { "id": "zilong", "name": "Zilong", "role": "Fighter", "stats": { "physAtk": 123, "hp": 2778, "mana": 0, "physDef": 22, "magDef": 15, "atkSpd": 0.95, "moveSpd": 265 } },
+  { "id": "nana", "name": "Nana", "role": "Mage", "stats": { "magPow": 115, "hp": 2472, "mana": 490, "physDef": 16, "magDef": 17, "atkSpd": 0.83, "moveSpd": 260 } },
+  { "id": "saber", "name": "Saber", "role": "Assassin", "stats": { "physAtk": 118, "hp": 2579, "mana": 0, "physDef": 20, "magDef": 15, "atkSpd": 0.93, "moveSpd": 260 } },
+  { "id": "eudora", "name": "Eudora", "role": "Mage", "stats": { "magPow": 118, "hp": 2379, "mana": 495, "physDef": 15, "magDef": 17, "atkSpd": 0.85, "moveSpd": 260 } },
+  { "id": "chou", "name": "Chou", "role": "Fighter", "stats": { "physAtk": 120, "hp": 2845, "mana": 0, "physDef": 23, "magDef": 16, "atkSpd": 0.95, "moveSpd": 265 } },
+  { "id": "kagura", "name": "Kagura", "role": "Mage", "stats": { "magPow": 116, "hp": 2455, "mana": 500, "physDef": 15, "magDef": 17, "atkSpd": 0.83, "moveSpd": 260 } },
+  { "id": "granger", "name": "Granger", "role": "Marksman", "stats": { "physAtk": 122, "hp": 2520, "mana": 0, "physDef": 18, "magDef": 15, "atkSpd": 1.0, "moveSpd": 265 } },
+  { "id": "lunox", "name": "Lunox", "role": "Mage", "stats": { "magPow": 117, "hp": 2480, "mana": 510, "physDef": 15, "magDef": 17, "atkSpd": 0.83, "moveSpd": 260 } },
+  { "id": "hayabusa", "name": "Hayabusa", "role": "Assassin", "stats": { "physAtk": 119, "hp": 2580, "mana": 0, "physDef": 20, "magDef": 15, "atkSpd": 0.93, "moveSpd": 265 } },
+  { "id": "minotaur", "name": "Minotaur", "role": "Tank", "stats": { "physAtk": 107, "hp": 3560, "mana": 430, "physDef": 27, "magDef": 18, "atkSpd": 0.83, "moveSpd": 255 } },
+  { "id": "esmeralda", "name": "Esmeralda", "role": "Mage", "stats": { "magPow": 113, "hp": 2800, "mana": 480, "physDef": 23, "magDef": 17, "atkSpd": 0.85, "moveSpd": 260 } },
+  { "id": "claude", "name": "Claude", "role": "Marksman", "stats": { "physAtk": 118, "hp": 2480, "mana": 0, "physDef": 17, "magDef": 15, "atkSpd": 1.02, "moveSpd": 265 } },
+  { "id": "benedetta", "name": "Benedetta", "role": "Assassin", "stats": { "physAtk": 122, "hp": 2680, "mana": 0, "physDef": 21, "magDef": 15, "atkSpd": 0.97, "moveSpd": 265 } },
+  { "id": "franco", "name": "Franco", "role": "Tank", "stats": { "physAtk": 112, "hp": 3400, "mana": 420, "physDef": 26, "magDef": 18, "atkSpd": 0.83, "moveSpd": 250 } },
+  { "id": "lancelot", "name": "Lancelot", "role": "Assassin", "stats": { "physAtk": 118, "hp": 2570, "mana": 0, "physDef": 19, "magDef": 15, "atkSpd": 0.95, "moveSpd": 265 } },
+  { "id": "gusion", "name": "Gusion", "role": "Assassin", "stats": { "physAtk": 121, "hp": 2550, "mana": 0, "physDef": 18, "magDef": 15, "atkSpd": 0.95, "moveSpd": 265 } }
+]
