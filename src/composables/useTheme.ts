@@ -1,7 +1,7 @@
 import { shallowRef, computed } from 'vue'
 
 const STORAGE_KEY = 'mlb-theme'
-const DARK_CSS_HREF = '/dark-theme.css'
+const DARK_CSS_HREF = 'dark-theme.css'
 
 let darkLink: HTMLLinkElement | null = null
 
