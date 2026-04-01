@@ -22,11 +22,11 @@ interface GameDataEndpoints {
 
 // Define the paths for each data endpoint
 const DATA_PATHS: { [K in keyof GameDataEndpoints]: string } = {
-  heroes: '/data/heroes.json',
-  items: '/data/items.json',
-  emblemSets: '/data/emblem-sets.json',
-  emblemTiers: '/data/emblem-tiers.json',
-  emblemStatValues: '/data/emblem-stat-values.json',
+  heroes: 'data/heroes.json',
+  items: 'data/items.json',
+  emblemSets: 'data/emblem-sets.json',
+  emblemTiers: 'data/emblem-tiers.json',
+  emblemStatValues: 'data/emblem-stat-values.json',
 }
 
 export class GameDataClient {
